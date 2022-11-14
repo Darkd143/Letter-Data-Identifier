@@ -1,0 +1,2 @@
+
+boston = load_boston()
