@@ -1,37 +1,38 @@
 # Split the data into training and testing sets
 # Instantiate model with 1000 decision trees
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, precision_score, recall_score
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler, LabelEncoder
-
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.metrics import accuracy_score, precision_score, recall_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
 df = pd.read_csv('letter-recognition.csv')
 
-
-# One-hot encode the data using pandas get_dummies
-# df = pd.get_dummies(df)
+dataframe = pd.DataFrame(df, columns=["letter", "xbox", "ybox", "width", "height", "onpix", "xbar",
+                         "ybar", "x2bar", "y2bar", "xybar", "x2ybar", "xy2bar", "xedge", "xedgey", "yedge", "yedgex"])
 
 lab = LabelEncoder()
 
 df['letter'] = lab.fit_transform(df['letter'])
 
-# Labels are the values we want to predict
-labels = np.array(df['letter'])  # Remove the labels from the df
-# axis 1 refers to the columns
-# Saving feature names for later use
-# df = df.drop('letter', axis=1)
-# feature_list = list(df.columns)  # Convert to numpy array
-# df = np.array(df)
 X = df.loc[:, df.columns != 'letter'].values
 Y = df["letter"].values
+
 train_x, test_x, train_y, test_y = train_test_split(X, Y,
                                                     random_state=42,
                                                     train_size=0.8,
                                                     test_size=0.2,
                                                     shuffle=True)
+
+clf = RandomForestClassifier(n_estimators=100)
+
+# Train the model using the training sets y_pred=clf.predict(X_test)
+clf.fit(train_x, train_y)
+
+predictions = clf.predict(test_x)
+
+# rf = RandomForestClassifier(n_estimators=50)
 # Using Skicit-learn to split data into training and testing sets
 
 # print('Training df Shape:', train_df.shape)
@@ -48,11 +49,11 @@ train_x, test_x, train_y, test_y = train_test_split(X, Y,
 
 # Import the model we are using
 # Train the model on training data
-rf = RandomForestRegressor(n_estimators=1000, random_state=42)
-rf.fit(train_x, train_y)
+# rf = RandomForestRegressor(n_estimators=1000, random_state=42)
+# rf.fit(X, Y)
 
 # Use the forest's predict method on the test data
-predictions = rf.predict(test_x)  # Calculate the absolute errors
+# predictions = rf.predict(test_x)  # Calculate the absolute errors
 # Print out the mean absolute error (mae)
 
 
@@ -62,5 +63,7 @@ results_dict = {'Accuracy': 0, 'Precision': 0, 'Recall': 0}
 # compare the truth labels with the predicted labels for accuracy, precision, and recall
 # store the results into the dataframe
 results_dict['Accuracy'] = accuracy_score(test_y, predictions)
-results_dict['Precision'] = precision_score(test_y, predictions)
-results_dict['Recall'] = recall_score(test_y, predictions)
+# results_dict['Precision'] = precision_score(test_y, predictions)
+# results_dict['Recall'] = recall_score(test_y, predictions)
+
+print(results_dict['Accuracy'])

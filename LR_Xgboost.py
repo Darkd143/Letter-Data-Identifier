@@ -14,7 +14,7 @@ from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 
 df = pd.read_csv('letter-recognition.csv')
 
-dataframe = pd.DataFrame(df, columns=["letter", "xbox", "ybox", "width", "height", "onpix", "xbar",
+df = pd.DataFrame(df, columns=["letter", "xbox", "ybox", "width", "height", "onpix", "xbar",
                          "ybar", "x2bar", "y2bar", "xybar", "x2ybar", "xy2bar", "xedge", "xedgey", "yedge", "yedgex"])
 
 lab = LabelEncoder()
