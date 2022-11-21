@@ -19,7 +19,7 @@ def LetterSplitter(Letter, X, Y, per):
     LY = []
 
     index = 0
-    i = 0
+    i = 1
     while (index < len(X)):
         if (Y[index] == x):
             if (i < per):
@@ -29,7 +29,7 @@ def LetterSplitter(Letter, X, Y, per):
             else:
                 NewX.append(X[index])
                 NewY.append(Y[index])
-                i = 0
+                i = 1
         else:
             NewX.append(X[index])
             NewY.append(Y[index])
