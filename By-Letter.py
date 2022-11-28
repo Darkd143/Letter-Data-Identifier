@@ -50,13 +50,11 @@ def ModelDefine(identifier):
                               #   objective='binary:logistic',
                               objective='multi:softprob',
                               n_estimators=1000,
-                              reg_alpha=0.3,
-                              max_depth=4,
-                              gamma=10)
+                              reg_alpha=0.5,
+                              max_depth=10,
+                              gamma=3)
     elif (identifier == "rf"):
         model = RandomForestClassifier(n_estimators=100)
-    elif (identifier == "nn"):
-        model = None
     else:
         model = None
 
@@ -71,12 +69,13 @@ def GetPreferences():
     Letter = input('Enter Letter: ')[0]
     Letter = Letter.upper()
 
-    Model = input('Enter Model: (xgb, rf, nn) ')
+    Model = input('Enter Model: (xgb, rf) ')
     Model = Model.lower()
 
-    print('For every x ', Letter, '\'s, keep 1 ',
-          Letter, ' (x must be > 1): ', sep='', end='')
-    Per = int(input())
+    # print('For every x ', Letter, '\'s, keep 1 ',
+    #       Letter, ' (x must be > 1): ', sep='', end='')
+    # Per = int(input())
+    Per = 2
 
     return Letter, Model, Per
 
@@ -105,23 +104,9 @@ ttrain_x, ttest_x, ttrain_y, ttest_y = train_test_split(X, Y,
 
 # https://github.com/scikit-learn/scikit-learn/blob/f3f51f9b6/sklearn/model_selection/_split.py#L2349
 
-print(ttrain_x)
-print(np.shape(ttrain_x))
-
-print("VS")
-
-print(train_x)
-print(np.shape(train_x))
-
-# print(np.shape(train_x), ' train X ', np.shape(ttrain_x))
-# print(np.shape(train_y), ' train Y ', np.shape(ttrain_y))
-# print(np.shape(test_x), ' test X ', np.shape(ttest_x))
-# print(np.shape(test_y), ' test Y ', np.shape(ttest_y))
 
 model = ModelDefine(ModelLabel)
 
-print(len(train_x))
-print(len(train_y))
 
 model.fit(train_x, train_y)
 

@@ -25,7 +25,8 @@ Y = LabelEncoder().fit_transform(Y)
 # Y = to_categorical(Y, classes)
 
 
-train_x, test_x, train_y, test_y = train_test_split(X,Y, test_size = 0.3, random_state = 0)
+train_x, test_x, train_y, test_y = train_test_split(
+    X, Y, test_size=0.3, random_state=0)
 
 model = XGBClassifier(silent=False,
                       scale_pos_weight=1,
@@ -35,9 +36,9 @@ model = XGBClassifier(silent=False,
                       #   objective='binary:logistic',
                       objective='multi:softprob',
                       n_estimators=1000,
-                      reg_alpha=0.3,
-                      max_depth=4,
-                      gamma=10)
+                      reg_alpha=0.5,
+                      max_depth=10,
+                      gamma=3)
 
 # model = XGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=1,
 #                       colsample_bynode=1, colsample_bytree=1, gamma=0, learning_rate=0.1,
