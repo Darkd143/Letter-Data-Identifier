@@ -35,7 +35,7 @@ def LetterSplitter(Letter, X, Y, per):
             NewY.append(Y[index])
         index += 1
 
-    return NewX, NewY, LX, LY
+    return NewX, LX, NewY, LY
 
 
 def ModelDefine(identifier):
@@ -66,17 +66,22 @@ def ModelDefine(identifier):
 def GetPreferences():
     Letter = None
     Model = None
+    Per = 1
 
     Letter = input('Enter Letter: ')[0]
     Letter = Letter.upper()
 
-    Model = input('Enter Model: (xgb, rf, nn) ')[0]
-    Model = Letter.lower()
+    Model = input('Enter Model: (xgb, rf, nn) ')
+    Model = Model.lower()
 
-    return Letter, Model
+    print('For every x ', Letter, '\'s, keep 1 ',
+          Letter, ' (x must be > 1): ', sep='', end='')
+    Per = int(input())
+
+    return Letter, Model, Per
 
 
-LetterLabel, ModelLabel = GetPreferences()
+LetterLabel, ModelLabel, Per = GetPreferences()
 
 path = 'letter-recognition.csv'
 data = pd.read_csv(path)
@@ -90,11 +95,33 @@ classes = len(np.unique(Y))
 X = MinMaxScaler().fit_transform(X)
 Y = LabelEncoder().fit_transform(Y)
 
-train_x, test_x, train_y, test_y = LetterSplitter(LetterLabel, X, Y, 5)
+train_x, test_x, train_y, test_y = LetterSplitter(LetterLabel, X, Y, Per)
 
-# print(test_y)
+ttrain_x, ttest_x, ttrain_y, ttest_y = train_test_split(X, Y,
+                                                        random_state=42,
+                                                        train_size=0.8,
+                                                        test_size=0.2,
+                                                        shuffle=True)
+
+# https://github.com/scikit-learn/scikit-learn/blob/f3f51f9b6/sklearn/model_selection/_split.py#L2349
+
+print(ttrain_x)
+print(np.shape(ttrain_x))
+
+print("VS")
+
+print(train_x)
+print(np.shape(train_x))
+
+# print(np.shape(train_x), ' train X ', np.shape(ttrain_x))
+# print(np.shape(train_y), ' train Y ', np.shape(ttrain_y))
+# print(np.shape(test_x), ' test X ', np.shape(ttest_x))
+# print(np.shape(test_y), ' test Y ', np.shape(ttest_y))
 
 model = ModelDefine(ModelLabel)
+
+print(len(train_x))
+print(len(train_y))
 
 model.fit(train_x, train_y)
 
