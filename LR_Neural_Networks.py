@@ -1,73 +1,49 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import numpy as np
-
-class NeuralNetwork():
-    
-    def __init__(self):
-        # seeding for random number generation
-        np.random.seed(1)
-        
-        #converting weights to a 3 by 1 matrix with values from -1 to 1 and mean of 0
-        self.synaptic_weights = 2 * np.random.random((3, 1)) - 1
-
-    def sigmoid(self, x):
-        #applying the sigmoid function
-        return 1 / (1 + np.exp(-x))
-
-    def sigmoid_derivative(self, x):
-        #computing derivative to the Sigmoid function
-        return x * (1 - x)
-
-    def train(self, training_inputs, training_outputs, training_iterations):
-        
-        #training the model to make accurate predictions while adjusting weights continually
-        for iteration in range(training_iterations):
-            #siphon the training data via  the neuron
-            output = self.think(training_inputs)
-
-            #computing error rate for back-propagation
-            error = training_outputs - output
-            
-            #performing weight adjustments
-            adjustments = np.dot(training_inputs.T, error * self.sigmoid_derivative(output))
-
-            self.synaptic_weights += adjustments
-
-    def think(self, inputs):
-        #passing the inputs via the neuron to get output   
-        #converting values to floats
-        
-        inputs = inputs.astype(float)
-        output = self.sigmoid(np.dot(inputs, self.synaptic_weights))
-        return output
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder,MinMaxScaler,scale
+import pandas as pd
+from keras.utils import to_categorical
+import keras
+from keras import activations
+from keras.layers import Input, Dense, Dropout, Flatten, Activation
+from keras.models import Model, Sequential
+from sklearn.metrics import accuracy_score
 
 
-if __name__ == "__main__":
+path = 'letter-recognition.csv'
 
-    #initializing the neuron class
-    neural_network = NeuralNetwork()
+data=pd.read_csv(path)
 
-    print("Beginning Randomly Generated Weights: ")
-    print(neural_network.synaptic_weights)
+X=data.iloc[:,1:]
 
-    #training data consisting of 4 examples--3 input values and 1 output
-    training_inputs = np.array([[0,0,1],
-                                [1,1,1],
-                                [1,0,1],
-                                [0,1,1]])
+Y=data.iloc[:,0]
 
-    training_outputs = np.array([[0,1,1,0]]).T
+classes = len(np.unique(Y))
 
-    #training taking place
-    neural_network.train(training_inputs, training_outputs, 15000)
+X = MinMaxScaler().fit_transform(X)
 
-    print("Ending Weights After Training: ")
-    print(neural_network.synaptic_weights)
+Y = LabelEncoder().fit_transform(Y)
 
-    user_input_one = str(input("User Input One: "))
-    user_input_two = str(input("User Input Two: "))
-    user_input_three = str(input("User Input Three: "))
-    
-    print("Considering New Situation: ", user_input_one, user_input_two, user_input_three)
-    print("New Output data: ")
-    print(neural_network.think(np.array([user_input_one, user_input_two, user_input_three])))
-    print("Wow, we did it!")
+Y = to_categorical(Y,classes)
+# print(X.shape,Y.shape)
+
+X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size = 0.3, random_state = 0)
+
+dim = X.shape[1]
+
+model = Sequential()
+
+model.add(Dense(300,activation='relu',input_shape=(dim,)))
+
+model.add(Dropout(0.2))
+
+model.add(Dense(150,name="feature",activation='relu'))
+
+model.add(Dense(classes,activation='softmax'))
+model.summary()
+
+model.compile(loss='categorical_crossentropy',optimizer=keras.optimizers.Adam(lr=0.01),metrics=['accuracy'])
+
+model.fit(X_train,Y_train,batch_size=2096, epochs=150,verbose=1,validation_data=(X_test,Y_test))
