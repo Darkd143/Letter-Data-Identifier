@@ -35,7 +35,7 @@ def LetterSplitter(Letter, X, Y, per):
             NewY.append(Y[index])
         index += 1
 
-    return NewX, NewY, LX, LY
+    return NewX, LX, NewY, LY
 
 
 def ModelDefine(identifier):
@@ -50,13 +50,11 @@ def ModelDefine(identifier):
                               #   objective='binary:logistic',
                               objective='multi:softprob',
                               n_estimators=1000,
-                              reg_alpha=0.3,
-                              max_depth=4,
-                              gamma=10)
+                              reg_alpha=0.5,
+                              max_depth=10,
+                              gamma=3)
     elif (identifier == "rf"):
         model = RandomForestClassifier(n_estimators=100)
-    elif (identifier == "nn"):
-        model = None
     else:
         model = None
 
@@ -66,17 +64,23 @@ def ModelDefine(identifier):
 def GetPreferences():
     Letter = None
     Model = None
+    Per = 1
 
     Letter = input('Enter Letter: ')[0]
     Letter = Letter.upper()
 
-    Model = input('Enter Model: (xgb, rf, nn) ')[0]
-    Model = Letter.lower()
+    Model = input('Enter Model: (xgb, rf) ')
+    Model = Model.lower()
 
-    return Letter, Model
+    # print('For every x ', Letter, '\'s, keep 1 ',
+    #       Letter, ' (x must be > 1): ', sep='', end='')
+    # Per = int(input())
+    Per = 2
+
+    return Letter, Model, Per
 
 
-LetterLabel, ModelLabel = GetPreferences()
+LetterLabel, ModelLabel, Per = GetPreferences()
 
 path = 'letter-recognition.csv'
 data = pd.read_csv(path)
@@ -90,11 +94,19 @@ classes = len(np.unique(Y))
 X = MinMaxScaler().fit_transform(X)
 Y = LabelEncoder().fit_transform(Y)
 
-train_x, test_x, train_y, test_y = LetterSplitter(LetterLabel, X, Y, 5)
+train_x, test_x, train_y, test_y = LetterSplitter(LetterLabel, X, Y, Per)
 
-# print(test_y)
+ttrain_x, ttest_x, ttrain_y, ttest_y = train_test_split(X, Y,
+                                                        random_state=42,
+                                                        train_size=0.8,
+                                                        test_size=0.2,
+                                                        shuffle=True)
+
+# https://github.com/scikit-learn/scikit-learn/blob/f3f51f9b6/sklearn/model_selection/_split.py#L2349
+
 
 model = ModelDefine(ModelLabel)
+
 
 model.fit(train_x, train_y)
 
