@@ -96,11 +96,11 @@ Y = LabelEncoder().fit_transform(Y)
 
 train_x, test_x, train_y, test_y = LetterSplitter(LetterLabel, X, Y, Per)
 
-ttrain_x, ttest_x, ttrain_y, ttest_y = train_test_split(X, Y,
-                                                        random_state=42,
-                                                        train_size=0.8,
-                                                        test_size=0.2,
-                                                        shuffle=True)
+# ttrain_x, ttest_x, ttrain_y, ttest_y = train_test_split(X, Y,
+#                                                         random_state=42,
+#                                                         train_size=0.8,
+#                                                         test_size=0.2,
+#                                                         shuffle=True)
 
 # https://github.com/scikit-learn/scikit-learn/blob/f3f51f9b6/sklearn/model_selection/_split.py#L2349
 
